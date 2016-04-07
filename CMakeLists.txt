@@ -19,16 +19,32 @@ SET(BUILD_EVALUATOR ${DEFAULT_BUILD_EVALUATOR} CACHE BOOL "Build the scene flow 
 #Build the scene flow evaluator
 IF (BUILD_EVALUATOR)
 	FIND_PACKAGE(OpenCV REQUIRED)
+	find_package(Boost REQUIRED python)
+	find_package(PythonLibs)
 	
-	ADD_EXECUTABLE(Scene-Flow-Impair  
+	include_directories(${OpenCV_INCLUDE_DIRS})
+	include_directories(${Boost_INCLUDE_DIR})
+	include_directories(${PYTHON_INCLUDE_DIRS})
+	
+	ADD_LIBRARY(PySceneFlow SHARED
 		main_scene_flow_impair.cpp
 		scene_flow_impair.cpp
-		scene_flow_impair.h)
+		scene_flow_impair.h
+		python.cpp)
+	set_target_properties(PySceneFlow PROPERTIES DEBUG_POSTFIX "D")
+	set_target_properties(PySceneFlow PROPERTIES SUFFIX ".pyd")
+	install(TARGETS PySceneFlow
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin)
 		
-	TARGET_LINK_LIBRARIES(Scene-Flow-Impair 
+	TARGET_LINK_LIBRARIES(PySceneFlow 
 			${OpenCV_LIBS}
 			${CUDA_LIBRARIES}
-			pdflow_cudalib)		
+			${Boost_LIBRARIES}
+			${PYTHON_LIBRARIES}
+			pdflow_cudalib)
+	
 ENDIF (BUILD_EVALUATOR)
 
 SET(DEFAULT_BUILD_RT_VISUALIZATION ON)
@@ -39,16 +55,16 @@ IF (BUILD_RT_VISUALIZATION)
 	FIND_PACKAGE(MRPT REQUIRED base gui opengl)
 
 	IF (WIN32)
-		INCLUDE_DIRECTORIES($ENV{OPENNI2_INCLUDE})
-		LINK_DIRECTORIES($ENV{OPENNI2_LIB})
-		SET(OpenNI_lib "$ENV{OPENNI2_LIB}/OpenNI2.lib")
+		INCLUDE_DIRECTORIES("C:/Program Files/OpenNI2/Include")
+		LINK_DIRECTORIES("C:/Program Files/OpenNI2/Lib")
+		SET(OpenNI_lib "C:/Program Files/OpenNI2/Lib/OpenNI2.lib")
 	ENDIF (WIN32)
 	
 	IF (UNIX)
 		SET(OpenNI2_libdir "/usr/lib")
-		INCLUDE_DIRECTORIES("/usr/include/openni2")
-		LINK_DIRECTORIES(${OpenNI2_libdir})
-		SET(OpenNI_lib "${OpenNI2_libdir}/libOpenNI2.so")
+		INCLUDE_DIRECTORIES("C:/Program Files/OpenNI2/Include")
+		LINK_DIRECTORIES("C:/Program Files/OpenNI2/Lib")
+		SET(OpenNI_lib "C:/Program Files/OpenNI2/Lib/OpenNI2.lib")
 	ENDIF (UNIX)
 
 	ADD_EXECUTABLE(Scene-Flow-Visualization  

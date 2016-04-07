@@ -33,7 +33,7 @@
 #include <string.h>
 
 #ifdef _WIN32
-    inline float log2(const float x){ return  log(x) * M_LOG2E;}
+    //inline float log2(const float x){ return  log(x) * M_LOG2E;}
 
 #elif __linux
     inline int stoi(char *c) {return int(std::strtol(c,NULL,10));}
