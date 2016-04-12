@@ -15,7 +15,8 @@ cv::Mat getDisplacement(const PD_flow_opencv &flow)
         y = cv::Mat(sz, cv::DataType<float>::type, flow.dyp),
         z = cv::Mat(sz, cv::DataType<float>::type, flow.dzp);
     cv::Mat ret;
-    cv::merge({ x, y, z }, ret);
+    std::vector<cv::Mat> xyz{ x, y, z };
+    cv::merge(xyz, ret);
     cv::Mat tret;
     cv::transpose(ret, tret);
     return tret;
